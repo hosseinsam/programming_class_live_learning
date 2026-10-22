@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مهندسی نرم‌افزار ≠ فقط برنامه‌نویسی — نمونه پروژه مدیریت شیفت</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    background: #0F172A;
+    color: #F8FAFC;
+    font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+    margin: 0;
+    padding: 40px 20px;
+    line-height: 1.85;
+    direction: rtl;
+  }
+
+  .container { max-width: 960px; margin: 0 auto; }
+
+  /* ===== Hero ===== */
+  .hero {
+    background: #0F172A;
+    color: #F8FAFC;
+    padding: 24px 28px;
+    border-radius: 12px;
+    border-right: 5px solid #22D3EE;
+    margin: 20px 0;
+  }
+  .hero h2 { margin: 0; font-size: 24px; font-weight: 900; }
+
+  /* ===== Section title ===== */
+  .section-title {
+    color: #22D3EE;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 36px 0 16px;
+    padding-right: 12px;
+    border-right: 3px solid #22D3EE;
+  }
+
+  /* ===== Tables ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    background: rgba(34, 211, 238, 0.04);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  th {
+    background: rgba(34, 211, 238, 0.15);
+    color: #22D3EE;
+    padding: 12px 16px;
+    text-align: right;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(34, 211, 238, 0.3);
+  }
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    color: #CBD5E1;
+  }
+  td strong { color: #F8FAFC; }
+  tr:last-child td { border-bottom: none; }
+
+  /* ===== Callout ===== */
+  .callout {
+    background: rgba(34, 211, 238, 0.08);
+    border-right: 4px solid #22D3EE;
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin: 16px 0;
+    color: #E2E8F0;
+    font-size: 16px;
+  }
+  .callout strong { color: #22D3EE; }
+
+  /* ===== Stage cards (3 stages) ===== */
+  .stages {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .stage-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(34, 211, 238, 0.2);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .stage-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #22D3EE;
+    color: #0F172A;
+    border-radius: 50%;
+    font-weight: 900;
+    font-size: 14px;
+    margin-left: 8px;
+  }
+  .stage-title { color: #F8FAFC; font-weight: 700; font-size: 16px; }
+  .stage-desc { color: #94A3B8; font-size: 13px; margin-top: 8px; }
+
+  /* ===== Project block ===== */
+  .project-block {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 16px 0;
+    border-right: 3px solid #22D3EE;
+  }
+  .project-block h3 {
+    color: #22D3EE;
+    margin: 0 0 14px;
+    font-size: 18px;
+  }
+  .info-row {
+    display: flex;
+    gap: 12px;
+    margin: 8px 0;
+    color: #CBD5E1;
+    align-items: flex-start;
+  }
+  .info-label {
+    color: #22D3EE;
+    font-weight: 700;
+    min-width: 110px;
+    flex-shrink: 0;
+  }
+
+  /* ===== Class box (Abstraction) ===== */
+  .class-box {
+    background: #0B1220;
+    border: 1px solid rgba(34, 211, 238, 0.25);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 12px 0;
+  }
+  .class-name {
+    color: #22D3EE;
+    font-weight: 900;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  .class-fields { color: #94A3B8; font-size: 14px; }
+  .class-methods { color: #F8FAFC; font-size: 14px; margin-top: 8px; }
+  .method { color: #67E8F9; }
+
+  /* ===== Role cards ===== */
+  .role-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .role-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(34, 211, 238, 0.25);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .role-card h4 {
+    color: #22D3EE;
+    margin: 0 0 10px;
+    font-size: 15px;
+  }
+  .role-card ol {
+    margin: 0;
+    padding-right: 20px;
+    color: #CBD5E1;
+    font-size: 14px;
+  }
+  .role-card ol li { margin: 8px 0; }
+  .role-card ol li strong { color: #F8FAFC; }
+
+  /* Sub list inside role cards */
+  .sub-list {
+    list-style: none;
+    padding-right: 18px;
+    margin: 6px 0;
+  }
+  .sub-list li {
+    color: #94A3B8;
+    font-size: 13px;
+    padding: 3px 0;
+    position: relative;
+    padding-right: 16px;
+  }
+  .sub-list li::before {
+    content: '—';
+    color: #22D3EE;
+    position: absolute;
+    right: 0;
+  }
+
+  /* ===== Tradeoff chips ===== */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .chip {
+    background: rgba(34, 211, 238, 0.1);
+    border: 1px solid rgba(34, 211, 238, 0.3);
+    color: #67E8F9;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+  }
+
+  /* ===== Phases grid ===== */
+  .triplet-badge {
+    display: inline-block;
+    background: rgba(34, 211, 238, 0.12);
+    color: #22D3EE;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+  .phases {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .phase-card {
+    background: rgba(34, 211, 238, 0.05);
+    border: 1px solid rgba(34, 211, 238, 0.2);
+    border-radius: 8px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+  .phase-num {
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    background: #22D3EE;
+    color: #0F172A;
+    border-radius: 50%;
+    font-weight: 900;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  .phase-text { color: #E2E8F0; font-size: 13px; }
+  .phase-empty {
+    color: #475569;
+    border: 1px dashed rgba(255,255,255,0.1);
+    background: transparent;
+  }
+
+  /* ===== Stage wrapper ===== */
+  .stage-wrapper {
+    margin: 24px 0;
+    padding: 24px;
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 14px;
+    border: 1px solid rgba(34, 211, 238, 0.12);
+  }
+  .stage-wrapper > h3 {
+    color: #F8FAFC;
+    font-size: 22px;
+    margin: 0 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .stage-wrapper > h3 .badge {
+    background: #22D3EE;
+    color: #0F172A;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 900;
+  }
+  .stage-wrapper > .subtitle {
+    color: #94A3B8;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .sub-head {
+    color: #22D3EE;
+    font-weight: 700;
+    margin: 18px 0 8px;
+    font-size: 15px;
+  }
+
+  @media (max-width: 720px) {
+    .stages, .phases { grid-template-columns: 1fr 1fr; }
+    .role-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .stages, .phases { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ===== Hero ===== -->
+  <div class="hero">
+    <h2>مهندسی نرم‌افزار ≠ فقط برنامه‌نویسی</h2>
+  </div>
+
+  <!-- ===== Four pillars ===== -->
+  <div class="section-title">چهار ستون تفکر مهندسی</div>
+  <table>
+    <thead>
+      <tr><th style="width:35%">مفهوم</th><th>معنی برای ما</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>کدنویسی</strong></td><td>ابزار است، نه هدف</td></tr>
+      <tr><td><strong>حل مسئله</strong></td><td>هسته اصلی کار مهندس</td></tr>
+      <tr><td><strong>Trade-off</strong></td><td>هر تصمیمی چیزی را بهتر و چیزی را بدتر می‌کند</td></tr>
+      <tr><td><strong>انسان‌ها</strong></td><td>کاربر، تیم، ذی‌نفعان — نرم‌افزار برای آدم‌هاست</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ===== Central idea ===== -->
+  <div class="section-title">ایده مرکزی</div>
+  <div class="callout">
+    مهندسی نرم‌افزار = تبدیل <strong>مسئله واقعی</strong> به <strong>سیستم قابل اتکا، مقیاس‌پذیر و قابل نگهداری</strong>
+  </div>
+
+  <!-- ===== Three stages intro ===== -->
+  <div class="section-title">سه مرحله‌ای که امروز شروع می‌کنیم</div>
+  <div class="stages">
+    <div class="stage-card">
+      <div><span class="stage-num">۱</span><span class="stage-title">درک مسئله</span></div>
+      <div class="stage-desc">Requirements، کاربران، محدودیت‌ها</div>
+    </div>
+    <div class="stage-card">
+      <div><span class="stage-num">۲</span><span class="stage-title">طراحی</span></div>
+      <div class="stage-desc">Abstraction، ساختار، Trade-off</div>
+    </div>
+    <div class="stage-card">
+      <div><span class="stage-num">۳</span><span class="stage-title">ساخت و اطمینان</span></div>
+      <div class="stage-desc">پیاده‌سازی، تست، بازخورد</div>
+    </div>
+  </div>
+
+  <!-- ============================================================= -->
+  <!-- ===== نمونه عملی: پروژه مدیریت شیفت پرستاران ===== -->
+  <!-- ============================================================= -->
+  <div class="hero" style="border-right-color:#F472B6; margin-top:40px;">
+    <h2 style="color:#F472B6;">نمونه عملی — پیاده‌سازی سه مرحله روی یک پروژه واقعی</h2>
+  </div>
+  <p style="color:#94A3B8; margin:-8px 4px 24px;">
+    حالا همین سه مرحله را روی یک پروژه واقعی پیاده می‌کنیم تا ببینیم هر مرحله چه خروجی‌ای دارد.
+  </p>
+
+  <!-- ===== Stage 1: درک مسئله ===== -->
+  <div class="stage-wrapper">
+    <h3><span class="badge">۱</span> درک مسئله</h3>
+    <div class="subtitle">Requirements · کاربران · محدودیت‌ها</div>
+
+    <div class="project-block">
+      <h3>پروژه: مدیریت شیفت</h3>
+
+      <div class="info-row">
+        <span class="info-label">عنوان پروژه:</span>
+        <span>مدیریت شیفت</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">کاربران:</span>
+        <span>پرستاران</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">محدودیت‌ها:</span>
+        <span>
+          ۴ تا بازه شیفت — وضیعیت بحرانی (نوع شیفت و شدت آن) — تعداد نفرات هر شیفت
+        </span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">نیازمندی‌ها:</span>
+        <span>
+          هر کاربر برای شروع و پایان کار بتواند اعلام کند — درخواست حضورها در روزهای کاری روی تقویم ثبت شود
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Stage 2: طراحی ===== -->
+  <div class="stage-wrapper">
+    <h3><span class="badge">۲</span> طراحی</h3>
+    <div class="subtitle">Abstraction · ساختار · Trade-off</div>
+
+    <div class="sub-head">Abstraction — موجودیت‌های اصلی</div>
+
+    <div class="class-box">
+      <div class="class-name">پرستار (Nurse)</div>
+      <div class="class-fields">نام — سن — سابقه — شیفت فعلی</div>
+      <div class="class-methods">
+        <span class="method">انتخاب شیفت()</span> ·
+        <span class="method">درخواست off()</span> ·
+        <span class="method">درخواست مرخصی()</span>
+      </div>
+    </div>
+
+    <div class="class-box">
+      <div class="class-name">شیفت (Shift)</div>
+      <div class="class-fields">نام — بازه</div>
+      <div class="class-methods">
+        <span class="method">حذف()</span> ·
+        <span class="method">ویرایش()</span> ·
+        <span class="method">ایجاد()</span>
+      </div>
+    </div>
+
+    <div class="sub-head">Trade-off — تصمیم‌های طراحی</div>
+    <div class="chips">
+      <span class="chip">تغییر شیفت به صورت درخواست باشد</span>
+      <span class="chip">هر شیفت شامل حداقل یک آقا و یک خانم</span>
+      <span class="chip">شیفت‌های سنگین پشت هم نباشند</span>
+    </div>
+
+    <div class="sub-head">ساختار — نقش‌ها و وظایف</div>
+    <div class="role-grid">
+      <div class="role-card">
+        <h4>کاربر (پرستار)</h4>
+        <ol>
+          <li><strong>لاگین — ثبت‌نام</strong></li>
+          <li><strong>دریافت و نمایش اطلاعات کاربردی</strong> (نمایش شیفت این ماه)</li>
+          <li><strong>ایجاد درخواست:</strong>
+            <ul class="sub-list">
+              <li>درخواست مرخصی</li>
+              <li>درخواست تغییر شیفت</li>
+            </ul>
+          </li>
+          <li><strong>درخواست مرخصی:</strong>
+            <ul class="sub-list">
+              <li>استحقاقی / استعلاجی</li>
+              <li>روزانه / ساعتی</li>
+            </ul>
+          </li>
+          <li><strong>درخواست تغییر شیفت:</strong>
+            <ul class="sub-list">
+              <li>شیفت مبدا و مقصد</li>
+              <li>انتخاب روز</li>
+              <li>انتخاب نوع شیفت</li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+
+      <div class="role-card">
+        <h4>مدیر</h4>
+        <ol>
+          <li><strong>لاگین — ثبت‌نام</strong></li>
+          <li><strong>دریافت و نمایش وضعیت پرستاران</strong></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Stage 3: فازبندی ===== -->
+  <div class="stage-wrapper">
+    <h3><span class="badge">۳</span> ساخت و اطمینان — فازبندی</h3>
+    <div class="subtitle">هر فاز شامل سه قسمت: پیاده‌سازی · تست · بازخورد</div>
+
+    <span class="triplet-badge">۸ فاز · هر فاز = پیاده‌سازی + تست + بازخورد</span>
+
+    <div class="phases">
+      <div class="phase-card">
+        <div class="phase-num">۱</div>
+        <div class="phase-text">نوع کاربران + ورود و ثبت‌نام</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">۲</div>
+        <div class="phase-text">پروفایل و مقادیر مورد نیاز آن</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-num">۳</div>
+        <div class="phase-text">شیفت‌سازی روی تقویم</div>
+      </div>
+      <div class="phase-card phase-empty">
+        <div class="phase-num" style="background:transparent;color:#475569;border:1px dashed #475569;">۴</div>
+        <div class="phase-text" style="color:#64748B;">— ادامه فازها —</div>
+      </div>
+      <div class="phase-card phase-empty">
+        <div class="phase-num" style="background:transparent;color:#475569;border:1px dashed #475569;">۵</div>
+        <div class="phase-text" style="color:#64748B;">—</div>
+      </div>
+      <div class="phase-card phase-empty">
+        <div class="phase-num" style="background:transparent;color:#475569;border:1px dashed #475569;">۶</div>
+        <div class="phase-text" style="color:#64748B;">—</div>
+      </div>
+      <div class="phase-card phase-empty">
+        <div class="phase-num" style="background:transparent;color:#475569;border:1px dashed #475569;">۷</div>
+        <div class="phase-text" style="color:#64748B;">—</div>
+      </div>
+      <div class="phase-card phase-empty">
+        <div class="phase-num" style="background:transparent;color:#475569;border:1px dashed #475569;">۸</div>
+        <div class="phase-text" style="color:#64748B;">—</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
